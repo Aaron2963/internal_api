@@ -2,7 +2,7 @@
     "name": "aaron-lin/internal-api",
     "autoload": {
         "psr-4": {
-            "Lin\\IAPI\\EndPoint": "src/EndPoint/"
+            "Lin\\IAPI\\EndPoint\\": "src/EndPoint/"
         }
     },
     "authors": [

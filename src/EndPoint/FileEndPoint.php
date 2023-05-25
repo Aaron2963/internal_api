@@ -30,6 +30,9 @@ class FileEndPoint extends RestfulApp
     public function OnGet()
     {
         try {
+            if (empty($_GET['filename'])) {
+                throw new \Exception('lack of mandatory parameters: filename');
+            }
             // validate if filename matches any of the allowed patterns
             $Allow = false;
             foreach ($this->AllowPathPatterns as $Pattern) {
@@ -41,7 +44,8 @@ class FileEndPoint extends RestfulApp
             if (!$Allow) {
                 throw new \Exception('filename not allowed');
             }
-            $FullFilename = $this->RootPath . $_GET['filename'];
+            $FullFilename = $this->RootPath . '/' . $_GET['filename'];
+            // echo $FullFilename;
             if (!file_exists($FullFilename)) {
                 throw new \Exception('file not exists');
             }
@@ -77,7 +81,7 @@ class FileEndPoint extends RestfulApp
                 throw new \Exception('filename not allowed');
             }
             // validate if file can be written
-            $FullFilename = $this->RootPath . $_POST['filename'];
+            $FullFilename = $this->RootPath . '/' . $_POST['filename'];
             if (file_exists($FullFilename) && !is_writable($FullFilename)) {
                 throw new \Exception('file already exists, and cannot be overwritten');
             }
