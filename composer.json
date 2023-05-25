@@ -1,0 +1,19 @@
+{
+    "name": "aaron-lin/internal-api",
+    "autoload": {
+        "psr-4": {
+            "Lin\\IAPI\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Aaron2963",
+            "email": "neotgrr@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "aaron-lin/app-php": "^0.3.2"
+    }
+}
