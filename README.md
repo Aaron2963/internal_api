@@ -6,9 +6,9 @@
 - [Introduction](#introduction)
 - [1. Client Cache](#1-client-cache)
   - [1.1 Create Cache on Client](#11-create-cache-on-client)
-- [2. Site Settings](#2-site-settings)
-  - [2.1 Read Site Settings](#21-read-site-settings)
-  - [2.2 Write Site Settings](#22-write-site-settings)
+- [2. File Transfer](#2-file-transfer)
+  - [2.1 Download File](#21-download-file)
+  - [2.2 Upload File](#22-upload-file)
 
 
 ## Introduction
@@ -23,7 +23,7 @@ This document describes the internal API of the application. The internal API is
 POST /iapi/cache
 ```
 
-Remote request server to create cache on server file system.
+Remote server request server to create cache on server file system.
 
 
 #### Request: String in HTTP Header, Parameter(s) in HTTP Body
@@ -86,29 +86,24 @@ Status: 400 Bad Request
 
 
 
-## 2. Site Settings
+## 2. File Transfer
 
-### 2.1 Read Site Settings
+### 2.1 Download File
 
 ```
-GET /api/site-settings
+GET /iapi/file
 ```
 
-遠端向伺服器取得網站設定。  
-伺服器收到請求後，從伺服器的檔案系統取得網站設定檔案，解析後回傳給遠端。  
-
-**Direction:** 遠端向伺服器
-
-**Restriction:** 每周限制 1000 次
+Remote server download file from server.
 
 
-#### Request: String in HTTP Header, Parameter(s) in Qeury String
+#### Request: String in HTTP Header, Parameter(s) in Query String
 
 Header
 
-| Name            | Type     | Description                                    |
-| :-------------- | :------- | :--------------------------------------------- |
-| `Authorization` | `string` | **(必填)** Bearer 類型令牌，令牌內容為 API Key |
+| Name            | Type     | Description                                                |
+| :-------------- | :------- | :--------------------------------------------------------- |
+| `Authorization` | `string` | **(Required)** Bearer type token，token content is API Key |
 
 
 ```
@@ -118,14 +113,13 @@ Authorization: Bearer b01fd1c05d93e77a887fa6c8c91088bb7f053fb220eaf87d51e5efa30f
 
 Query String
 
-| Name      | Type              | Description                                                                                                                                                                                                   |
-| :-------- | :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `keys`    | `array of string` | 網站設定欄位名稱的陣列                                                                                                                                                                                        |
-| `keys[i]` | `string`          | 網站設定的欄位名稱，可能的值為: `siteName/logoImageUrl/footerImageUrl/serviceTel1/serviceFax1/serviceAddress/serviceHours/serviceEmail/ownerName/linkLine/linkFacebook/linkYouTube/servicePeriod/serviceTel2` |
+| Name       | Type     | Description                                          |
+| :--------- | :------- | :--------------------------------------------------- |
+| `filename` | `string` | **(Required)** path and filename of downloading file |
 
 
 ```
-/api/site-settings?keys[]=siteName&keys[]=logoImageUrl&keys[]=serviceTel1
+https://example.com/iapi/file?filename=public/images/1.jpg
 ```
 
 
@@ -133,47 +127,38 @@ Query String
 
 ```
 Status: 200 OK
-```
-```json
-{
-    "siteName": "雙葉書廊課程網",
-    "logoImageUrl": [
-        "https://g4.misa.com.tw/yehyeh/data/cht/20220929/20220929tb3aku.jpg"
-    ],
-    "serviceTel1": "02-2368-4198"
-}
+Content-Type: image/jpg
 ```
 
 
 #### Error Response
 
 ```
-Status: 401 Unauthorized
+Status: 400 Bad Request
+```
+```json
+{
+    "status": "error",
+    "message": "keys and filenames count not match"
+}
 ```
 
-
-
-### 2.2 Write Site Settings
+### 2.2 Upload File
 
 ```
-PUT /api/site-settings
+POST /iapi/file
 ```
 
-遠端更新伺服器端的網站設定。  
-伺服器收到請求後，根據請求內容更新網站設定檔案，並回傳更新後的欄位給遠端。  
-
-**Direction:** 遠端向伺服器
-
-**Restriction:** 每周限制 1000 次
+Remote server upload file to server.
 
 
 #### Request: String in HTTP Header, Parameter(s) in HTTP Body
 
 Header
 
-| Name            | Type     | Description                                    |
-| :-------------- | :------- | :--------------------------------------------- |
-| `Authorization` | `string` | **(必填)** Bearer 類型令牌，令牌內容為 API Key |
+| Name            | Type     | Description                                                |
+| :-------------- | :------- | :--------------------------------------------------------- |
+| `Authorization` | `string` | **(Required)** Bearer type token，token content is API Key |
 
 
 ```
@@ -183,13 +168,15 @@ Authorization: Bearer b01fd1c05d93e77a887fa6c8c91088bb7f053fb220eaf87d51e5efa30f
 
 Body
 
-| Name   | Type     | Description                                                                                                                                                                                                           |
-| :----- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `json` | `string` | 網站設定的 JSON 格式資料，可設定的鍵為: `siteName/logoImageUrl/footerImageUrl/serviceTel1/serviceFax1/serviceAddress/serviceHours/serviceEmail/ownerName/linkLine/linkFacebook/linkYouTube/servicePeriod/serviceTel2` |
+| Name       | Type     | Description                                        |
+| :--------- | :------- | :------------------------------------------------- |
+| `content`  | `binary` | **(Required)** uploading file                      |
+| `filename` | `string` | **(Required)** path and filename of uploading file |
 
 
 ```
-json: {"siteName":"雙葉書廊課程網","logoImageUrl":["https://g4.misa.com.tw/yehyeh/data/cht/20220929/20220929tb3aku.jpg"],"serviceTel1":"02-2368-4198"}
+content: (binary)
+filename: ./public/images/1.jpg
 ```
 
 
@@ -208,6 +195,7 @@ Status: 400 Bad Request
 ```json
 {
     "status": "error",
-    "message": "Request body `json` is not a valid JSON string."
+    "message": "keys and filenames count not match"
 }
 ```
+

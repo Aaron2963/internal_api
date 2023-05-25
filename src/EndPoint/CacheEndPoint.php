@@ -1,20 +1,20 @@
 <?php
 
-namespace Lin\IAPI;
+namespace Lin\IAPI\EndPoint;
 
 use Lin\AppPhp\Server\RestfulApp;
 
-class Cache extends RestfulApp
+class CacheEndPoint extends RestfulApp
 {
     /**
-     * Link
+     * Database connection driver
      *
      * @var \PDO
      */
     public $Link;
 
     /**
-     * 
+     * Directory allow to save file
      *
      * @var string
      */
@@ -37,8 +37,8 @@ class Cache extends RestfulApp
             if (!preg_match('/^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)+$/', $_POST['fromDB'])) {
                 throw new \Exception('fromDB format error, should be like `table_name.column_name`');
             }
-            if (!is_writable($_POST['storePath']) || !is_dir($_POST['storePath']) || !mkdir($_POST['storePath'], 0777, true)) {
-                throw new \Exception('storePath not exists and can not create, or not writable');
+            if (!is_dir($_POST['storePath']) && !mkdir($_POST['storePath'], 0777, true)) {
+                throw new \Exception('storePath not exists and can not create');
             }
             $Keys = explode(',', $_POST['keys']);
             $Keys = array_map('trim', $Keys);
