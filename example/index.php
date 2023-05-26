@@ -10,9 +10,6 @@ use Lin\IAPI\EndPoint\FileEndPoint;
 use Lin\IAPI\Authorization\APIKeyAuthorization;
 use Lin\AppPhp\Server\App;
 
-error_reporting(E_ALL);
-// echo $_SERVER['REQUEST_URI'];
-
 $EndPoint = null;
 
 $DB_HOST = 'db';
