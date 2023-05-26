@@ -1,0 +1,14 @@
+[
+    {
+        "key": "xxxxxx(hashed string)",
+        "scopes": [
+            "post:cache",
+            "post:file",
+            "get:file"
+        ],
+        "requestLimit": 1000,
+        "requestCount": 0,
+        "createAt": 1234567890,
+        "lastAccessAt": 1234567890
+    }
+]
