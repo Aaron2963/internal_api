@@ -21,7 +21,7 @@ $DB_PASSWORD = 'test';
 $Link = new PDO("mysql:host=$DB_HOST;dbname=$DB_TABLE", $DB_USER, $DB_PASSWORD);
 
 if (strpos($_SERVER['REQUEST_URI'], '/example/cache') === 0) {
-    $EndPoint = new CacheEndPoint($Link, __DIR__ . '/cache/');
+    $EndPoint = new CacheEndPoint($Link, __DIR__ . '/public/cache/');
 } else if (strpos($_SERVER['REQUEST_URI'], '/example/file') === 0) {
     $EndPoint = new FileEndPoint(__DIR__, ['/^public\//']);
 }

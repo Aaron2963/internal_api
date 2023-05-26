@@ -31,13 +31,14 @@ class CacheEndPoint extends RestfulApp
     {
         try {
             // validation
-            if (empty($_POST['fromDB']) || empty($_POST['storePath']) || empty($_POST['keys']) || empty($_POST['values'])) {
+            if (empty($_POST['fromDB']) || empty($_POST['storePath']) || empty($_POST['keys']) || empty($_POST['filenames'])) {
                 throw new \Exception('lack of mandatory parameters: fromDB, storePath, keys, filenames');
             }
             if (!preg_match('/^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)+$/', $_POST['fromDB'])) {
                 throw new \Exception('fromDB format error, should be like `table_name.column_name`');
             }
-            if (!is_dir($_POST['storePath']) && !mkdir($_POST['storePath'], 0777, true)) {
+            $StorePath = $this->RootPath . '/' .  $_POST['storePath'];
+            if (!is_dir($StorePath) && !mkdir($StorePath, 0777, true)) {
                 throw new \Exception('storePath not exists and can not create');
             }
             $Keys = explode(',', $_POST['keys']);
@@ -51,7 +52,9 @@ class CacheEndPoint extends RestfulApp
             $Table = explode('.', $_POST['fromDB'])[0];
             $Column = explode('.', $_POST['fromDB'])[1];
             $TablePK = $this->Link->query("SHOW KEYS FROM $Table WHERE Key_name = 'PRIMARY';");
-            $TablePK = $TablePK->fetchAll()['Column_name'];
+            // print_r(json_encode($TablePK->fetchAll()));
+            $TablePK = $TablePK->fetchAll();
+            $TablePK = $TablePK[0]['Column_name'];
             // get data from db
             $Sql = "SELECT $Column FROM $Table WHERE ";
             $KeyValues = [];
@@ -68,10 +71,8 @@ class CacheEndPoint extends RestfulApp
             // save to file
             $SavedFiles = [];
             foreach ($Filenames as $i => $Filename) {
-                $FullPath = $this->RootPath . '/' .  $_POST['storePath'] . '/' . $Filename;
-                $File = fopen($FullPath, 'w');
-                fwrite($File, $Result[$i]);
-                fclose($File);
+                $FullPath = $StorePath . '/' . $Filename;
+                file_put_contents($FullPath, $Result[$i]);
                 $SavedFiles[] = $FullPath;
             }
             // response
